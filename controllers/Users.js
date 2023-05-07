@@ -57,10 +57,16 @@ export const register = async (req, res) => {
       pincode: pincode,
     };
 
-    const uploader = async (path) => await uploads(path, "momsKitchen");
     const path = req.file ? req.file.path : null;
-    const newPath = await uploader(path);
-    fs.unlinkSync(path);
+    let newPath;
+    if(path){
+      const uploader = async (path) => await uploads(path, "momsKitchen");
+      newPath = await uploader(path);
+      fs.unlinkSync(path);
+    }
+    else{
+      newPath = null
+    }
 
 
     const otp = otpGenerator.generate(4, {
