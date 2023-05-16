@@ -20,7 +20,7 @@ export const register = async (req, res) => {
       chefSpecialization,
       userType,
     } = req.body;
-    
+
     let user = await User.findOne({ email });
 
     if (user) {
@@ -59,15 +59,13 @@ export const register = async (req, res) => {
 
     const path = req.file ? req.file.path : null;
     let newPath;
-    if(path){
+    if (path) {
       const uploader = async (path) => await uploads(path, "momsKitchen");
       newPath = await uploader(path);
       fs.unlinkSync(path);
+    } else {
+      newPath = null;
     }
-    else{
-      newPath = null
-    }
-
 
     const otp = otpGenerator.generate(4, {
       digits: true,
@@ -90,8 +88,7 @@ export const register = async (req, res) => {
       otp_expiry: new Date(Date.now() + process.env.OTP_EXPIRE * 60 * 1000),
     });
 
-    // await sendMail(email, "Verify Your Account", `Your OTP is ${otp}`);
-
+    await sendMail(email, "Verify Your Account", `Your OTP is ${otp}`);
     sendToken(
       res,
       user,
@@ -230,7 +227,6 @@ export const updateProfile = async (req, res) => {
       gender,
       chefSpecialization,
     } = req.body;
-    const path = req.file ? req.file.path : null;
 
     if (phone.length !== 10 || !Number.isInteger(Number(phone))) {
       res.status(400).json({
@@ -257,6 +253,8 @@ export const updateProfile = async (req, res) => {
     };
 
     const newUser = {};
+
+    const path = req.file ? req.file.path : null;
 
     newUser.name = name;
     newUser.address = address;
@@ -312,7 +310,7 @@ export const forgetPassword = async (req, res) => {
 
     const message = `Your OTP for reseting the password is ${otp}. If you did not request for this, please ignore this email.`;
 
-    // await sendMail(email, "Request for resetting password", message);
+    await sendMail(email, "Request for resetting password", message);
 
     res.status(200).json({ success: true, message: `OTP sent to ${email}` });
   } catch (error) {
