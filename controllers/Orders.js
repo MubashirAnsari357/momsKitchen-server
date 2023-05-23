@@ -26,47 +26,48 @@ export const placeOrder = async (req, res) => {
 
       if (dish.availableQty < item.quantity) {
         allItemsInStock = false;
-        res
-        .status(401)
-        .json({ success: false, message: "Out of Stock" });
-        break;
-      }
-
-      let basketDish = {
-        dishId: item._id,
-        name: item.name,
-        chefName: item.chefName,
-        chefId: item.chefId,
-        photo: item.photo,
-        price: item.price,
-        quantity: item.quantity,
-        itemTotal: item.itemTotal,
-      };
-
-      const order = await Order.create({
-        orderId: orderId,
-        dish: basketDish,
-        customer: user._id,
-        name: name,
-        email: email,
-        phone: phone,
-        deliveryAddress: deliveryAddress,
-        totalAmount: totalAmount,
-      });
-
-      const newQty = dish.availableQty - item.quantity;
-
-      await Dish.findByIdAndUpdate(item._id, { availableQty: newQty });
-
-      if (!order) {
         return res
-          .status(500)
-          .json({ success: false, message: "Error placing order" });
+          .status(401)
+          .json({ success: false, message: "Out of Stock" });
       }
-    }
-    return res
-      .status(201)
-      .json({ success: true, message: "Your order has been placed!" });
+
+      if(allItemsInStock){
+        let basketDish = {
+          dishId: item._id,
+          name: item.name,
+          chefName: item.chefName,
+          chefId: item.chefId,
+          photo: item.photo,
+          price: item.price,
+          quantity: item.quantity,
+          itemTotal: item.itemTotal,
+        };
+  
+        const order = await Order.create({
+          orderId: orderId,
+          dish: basketDish,
+          customer: user._id,
+          name: name,
+          email: email,
+          phone: phone,
+          deliveryAddress: deliveryAddress,
+          totalAmount: totalAmount,
+        });
+  
+        const newQty = dish.availableQty - item.quantity;
+  
+        await Dish.findByIdAndUpdate(item._id, { availableQty: newQty });
+  
+        if (!order) {
+          return res
+            .status(500)
+            .json({ success: false, message: "Error placing order" });
+        }
+      }
+      return res
+        .status(201)
+        .json({ success: true, message: "Your order has been placed!" });
+      }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
