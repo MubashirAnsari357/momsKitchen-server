@@ -198,7 +198,7 @@ export const search = async (req, res) => {
       "Chicken",
       "Mutton",
       "Beef",
-      "Seafood",
+      "SeaFood",
     ];
 
     type === "all"
