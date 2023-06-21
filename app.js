@@ -27,3 +27,7 @@ app.use(cors({origin: true, credentials: true}));
 app.get("/", (req,res)=>{
     res.send("Server is working")
 })
+
+app.get("/api/v1", (req,res)=>{
+    res.send("API is working")
+})
