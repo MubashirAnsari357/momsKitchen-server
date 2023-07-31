@@ -61,6 +61,7 @@ const OrderSchema = new mongoose.Schema(
     phone: {
       type: Number,
       maxlength: [10, "Phone number must be 10 digits only"],
+      required: true,
     },
     deliveryStatus: {
       type: String,

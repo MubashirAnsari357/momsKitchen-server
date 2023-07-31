@@ -19,6 +19,12 @@ export const placeOrder = async (req, res) => {
       totalAmount,
     } = req.body;
 
+    if(name.length < 3 || email.length < 5 || phone.length < 10 || deliveryAddress.houseNo.length < 1 || deliveryAddress.street.length < 2 || deliveryAddress.city.length < 3 || deliveryAddress.pincode.length < 6){
+      return res
+          .status(401)
+          .json({ success: false, message: "Please fill valid details!" });
+    }
+
     let allItemsInStock = true;
     for (let index = 0; index < basket.items.length; index++) {
       const item = basket.items[index];
